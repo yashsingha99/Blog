@@ -33,6 +33,7 @@ const register = async (req, res) => {
     console.log("register => ", error);
   }
 };
+
 const login = async (req, res) => {
     const {username, password, email} = req.body;
 
@@ -53,6 +54,7 @@ const login = async (req, res) => {
     
 
 };
+
 const updateUser = async (req, res) => {};
 
 module.exports = { register, login, updateUser };

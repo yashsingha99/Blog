@@ -1,11 +1,9 @@
 const express = require("express");
 const app = express();
-const bodyParser = require("body-parser")
-const cookiesParser = require("cookies-parser")
+const cookieParser = require("cookie-parser")
 const dotenv = require("dotenv");
-const { default: mongoose } = require("mongoose");
-app.use(bodyParser)
-app.use(cookiesParser)
+// const { default: mongoose } = require("mongoose");
+app.use(cookieParser())
 dotenv.config();
  
 
