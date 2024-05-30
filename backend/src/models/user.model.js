@@ -16,6 +16,7 @@ const userSchema = mongoose.Schema(
     },
     avatar: {
       type: String,
+      default : ""
     },
     posts:[
         {
