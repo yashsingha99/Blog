@@ -8,6 +8,6 @@ app.use(bodyParser)
 app.use(cookiesParser)
 dotenv.config();
  
-const connect = mongoose.connect(process.env.URI)
+
 
 module.exports = app
