@@ -35,26 +35,34 @@ const register = async (req, res) => {
 };
 
 const login = async (req, res) => {
-    const {username, password, email} = req.body;
-
-    if(!password && (!email || !username))
-        return res.send(400).json({message : "Insufficient Data"})
-
-    const isUser = await User.findOne({
-        $or:[email, username]
-    })
-
-    if(!isExist)
-        return res.send(400).json({message : "user with email and username doesn't exist"})
+    try {
+        const {username, password, email} = req.body;
     
-    const user = await User.findById(isExist._id).select(
-        "-password"
-    )
-
+        if(!password && (!email || !username))
+            return res.send(400).json({message : "Insufficient Data"})
     
+        const isUser = await User.findOne({
+            $or:[email, username]
+        })
+    
+        if(!isUser)
+            return res.send(400).json({message : "email or username is wrong"})
+        const checkPassword = await isUser.isPasswordCorrect(password)
+        if(!checkPassword)
+            return res.send(400).json({message: "Password must same with email or username"})
+        const user = await User.findById(isUser._id).select(
+            "-password"
+        )
+        res.send(200).json({user, message: "successfully logged in"})
+        
+    } catch (error) {
+        console.log(error);
+    }
 
 };
 
-const updateUser = async (req, res) => {};
+const updateUser = async (req, res) => {
+
+};
 
 module.exports = { register, login, updateUser };
