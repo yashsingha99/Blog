@@ -7,12 +7,15 @@ dotenv.config();
 
  //!...................\\ 
 //*      Routers        \\
+app.get("/", (req, res) => {
+    res.send("API is running123");
+  }); 
 
 const userRoute = require("./src/routers/user.routes")
 app.use("api/user/", userRoute)
 
-const postRoute = require("./src/routers/post.routes")
-app.use("api/post/", postRoute)
+// const postRoute = require("./src/routers/post.routes")
+// app.use("api/post/", postRoute)
 
 
 

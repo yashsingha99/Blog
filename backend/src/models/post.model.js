@@ -10,7 +10,7 @@ const postSchema = mongoose.Schema(
     },
     Creator: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: User,
+      ref: "User",
     },
     content: {
       type: String,

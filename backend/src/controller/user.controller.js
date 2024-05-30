@@ -12,7 +12,7 @@ const register = async (req, res) => {
       if(isExist) {
         return res.send(400).json({message : "user with email or username already exist"})
       }
-      if(avatar){
+      if(!avatar){
          const newUser = await User.create({
           username,
           fullname,
