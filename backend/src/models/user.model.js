@@ -16,7 +16,7 @@ const userSchema = mongoose.Schema(
     },
     avatar: {
       type: String,
-      default : ""
+      default : "https://thumbs.dreamstime.com/b/user-profile-icon-vector-avatar-person-picture-portrait-symbol-neutral-gender-silhouette-circle-button-photo-blank-272664038.jpg"
     },
     posts:[
         {
@@ -28,15 +28,15 @@ const userSchema = mongoose.Schema(
   { timeStamps: true }
 );
 
-userSchema.pre("save", async(next) => {
-  if(!this.isModified("password")) 
-    return next();
-  this.password = await bcrypt.hash(this.password, 10);
-  next()
-})
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
 
-userSchema.methods.isPasswordCorrect = async(enteredPassword) => {
-    return await bcrypt.compare(enteredPassword, this.password)
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
+});
+
+userSchema.methods.isPasswordCorrect = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
 }
 const User = mongoose.model("User", userSchema);
 module.exports = User
