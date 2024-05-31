@@ -48,7 +48,10 @@ const fetchTitles = async (req, res) => {
 
 };
 const incrementViews = async(req, res) => {
-
+  const{ post} = req.body;
+  if(!post) 
+     return res.status(400).json({message : "post isn't provide"})
+    
 }
 const addComments = async (req, res) => {
 
