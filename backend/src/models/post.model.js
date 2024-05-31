@@ -8,7 +8,7 @@ const postSchema = mongoose.Schema(
     path: {
       type: String,
     },
-    Creator: {
+    creator: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
