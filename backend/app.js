@@ -19,8 +19,8 @@ app.get("/", (req, res) => {
 const userRoute = require("./src/routers/user.routes")
 app.use("/user", userRoute)
 
-// const postRoute = require("./src/routers/post.routes")
-// app.use("/post", postRoute)
+const postRoute = require("./src/routers/post.routes")
+app.use("/post", postRoute)
 
 
 

@@ -44,7 +44,7 @@ const login = async (req, res) => {
         res.send(200).json({user, message: "successfully logged in"})
         
     } catch (error) {
-        console.log(error);
+        console.log("login => ",error);
     }
 
 };
