@@ -18,7 +18,10 @@ const addPost = async (req, res) => {
       path: url,
       creator: checkUser._id,
     });
-    if (!createPost) return res.status(400).json({ message: "Internal Issue" });
+
+    if (!createPost) 
+        return res.status(400).json({ message: "Internal Issue" });
+
     const putPost = await User.findByIdAndUpdate(
       checkUser._id,
       {
@@ -74,10 +77,30 @@ const incrementLikes = async (req, res) => {
 };
 
 const addComments = async (req, res) => {
-  const { post, comment } = req.body;
-  if (!post) return res.status(400).json({ message: "post isn't provide" });
+try {
+    const { post, comment } = req.body;
+    if (!post || !comment) 
+      return res.status(400).json({ message: "Insufficient Data" });
   
-
+    const checkPost = await Post.findById(post._id);
+    if (!checkPost)
+      return res.status(400).json({ message: "Post isn't exist" });
+    
+    const addComment = await Post.findByIdAndUpdate(
+      post._id,
+      {
+        $addToSet : { comments : comment }
+      }
+    )
+    
+    if(!addComment)
+       return res.status(400).json({message : "Internel Issue"});
+    res.status(200).josn({message : "successfully comment added"})
+} catch (error) {
+  console.log(" addComment => ",error);
+}
+  
+     
 };
 
 module.exports = {
