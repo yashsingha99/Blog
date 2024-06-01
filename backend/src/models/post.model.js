@@ -18,13 +18,16 @@ const postSchema = mongoose.Schema(
     comments: [
       {
         type: String,
+        default : ""
       },
     ],
-    likes:{
-        type : Number
+    likes: {
+        type : Number,
+       default : 0
     },
-    views:{
-        type:Number
+    views: {
+        type:Number,
+       default:0
     }
   },
   { timeStamps: true }
