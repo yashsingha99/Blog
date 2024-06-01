@@ -19,8 +19,7 @@ const addPost = async (req, res) => {
       creator: checkUser._id,
     });
 
-    if (!createPost) 
-        return res.status(400).json({ message: "Internal Issue" });
+    if (!createPost) return res.status(400).json({ message: "Internal Issue" });
 
     const putPost = await User.findByIdAndUpdate(
       checkUser._id,
@@ -39,10 +38,36 @@ const addPost = async (req, res) => {
   }
 };
 
-const updatePost = async (req, res) => {};
-const deletePost = async (req, res) => {};
-const allPosts = async (req, res) => {};
-const fetchTitles = async (req, res) => {};
+const updatePost = async (req, res) => { };
+
+const deletePost = async (req, res) => { };
+
+const fetchUserPosts = async (req, res) => {
+  try {
+    const { user } = req.body;
+    if (!user) return res.status(400).json({ message: "Insufficient data" });
+    const checkUser = await findOne({
+      $or: [{ email: user?.email }, { username: user?.username }],
+    }).populate("posts");
+    if (!checkUser)
+      return res.status(400).json({ message: "user doesn't exist" });
+    const allposts = checkUser.posts;
+    if (!allposts)
+      return res
+        .status(400)
+        .json({
+          message: `${user?.username ? user.username : "user"
+            } isn't created any post`,
+        });
+    res.status(200).json({ posts: allposts, message: " successfully fetched posts " });
+  } catch (error) {
+    console.log(" fetchUserPosts => ", error);
+  }
+};
+
+const fetchAllPosts = async (req, res) => {  };
+
+const fetchTitles = async (req, res) => { };
 
 const incrementViews = async (req, res) => {
   try {
@@ -70,46 +95,43 @@ const incrementLikes = async (req, res) => {
     const updatePost = await Post.findByIdAndUpdate(post._id, {
       $inc: { likes: 1 },
     });
-    res.status(200).json({ updatePost,  message: "successfully increment likes" });
+    res
+      .status(200)
+      .json({ updatePost, message: "successfully increment likes" });
   } catch (error) {
     console.log(" incrementLikes => ", error);
   }
 };
 
 const addComments = async (req, res) => {
-try {
+  try {
     const { post, comment } = req.body;
-    if (!post || !comment) 
+    if (!post || !comment)
       return res.status(400).json({ message: "Insufficient Data" });
-  
+
     const checkPost = await Post.findById(post._id);
     if (!checkPost)
       return res.status(400).json({ message: "Post isn't exist" });
-    
-    const addComment = await Post.findByIdAndUpdate(
-      post._id,
-      {
-        $addToSet : { comments : comment }
-      }
-    )
-    
-    if(!addComment)
-       return res.status(400).json({message : "Internel Issue"});
-    res.status(200).josn({message : "successfully comment added"})
-} catch (error) {
-  console.log(" addComment => ",error);
-}
-  
-     
+
+    const addComment = await Post.findByIdAndUpdate(post._id, {
+      $addToSet: { comments: comment },
+    });
+
+    if (!addComment) return res.status(400).json({ message: "Internel Issue" });
+    res.status(200).json({ message: "successfully comment added" });
+  } catch (error) {
+    console.log(" addComment => ", error);
+  }
 };
 
 module.exports = {
   addPost,
   updatePost,
   deletePost,
-  allPosts,
+  fetchAllPosts,
   fetchTitles,
   addComments,
   incrementViews,
-  incrementLikes
+  incrementLikes,
+  fetchUserPosts
 };

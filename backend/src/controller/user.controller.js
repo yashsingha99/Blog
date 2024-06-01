@@ -46,7 +46,6 @@ const login = async (req, res) => {
     } catch (error) {
         console.log("login => ",error);
     }
-
 };
 
 const updateUser = async (req, res) => {
