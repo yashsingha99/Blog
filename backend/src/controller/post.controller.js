@@ -38,36 +38,45 @@ const addPost = async (req, res) => {
   }
 };
 
-const updatePost = async (req, res) => { };
-
-const deletePost = async (req, res) => { };
-
 const fetchUserPosts = async (req, res) => {
   try {
     const { user } = req.body;
     if (!user) return res.status(400).json({ message: "Insufficient data" });
-    const checkUser = await findOne({
+
+    const checkUser = await User.findOne({
       $or: [{ email: user?.email }, { username: user?.username }],
-    }).populate("posts");
+    }).populate("posts").then(async(res) => {
+      
+    })
+
+
     if (!checkUser)
       return res.status(400).json({ message: "user doesn't exist" });
+
     const allposts = checkUser.posts;
+
     if (!allposts)
-      return res
-        .status(400)
-        .json({
-          message: `${user?.username ? user.username : "user"
-            } isn't created any post`,
-        });
-    res.status(200).json({ posts: allposts, message: " successfully fetched posts " });
+      return res.status(400).json({
+        message: `${
+          user?.username ? user.username : "user"
+        } isn't created any post`,
+      });
+
+    res
+      .status(200)
+      .json({ posts: allposts, message: " successfully fetched posts " });
   } catch (error) {
     console.log(" fetchUserPosts => ", error);
   }
 };
 
-const fetchAllPosts = async (req, res) => {  };
+const updatePost = async (req, res) => {};
 
-const fetchTitles = async (req, res) => { };
+const deletePost = async (req, res) => {};
+
+const fetchAllPosts = async (req, res) => {};
+
+const fetchTitles = async (req, res) => {};
 
 const incrementViews = async (req, res) => {
   try {
@@ -76,10 +85,18 @@ const incrementViews = async (req, res) => {
     const checkPost = await Post.findById(post._id);
     if (!checkPost)
       return res.status(400).json({ message: "Post isn't exist" });
-    const updatePost = await Post.findByIdAndUpdate(post._id, {
-      $inc: { views: 1 },
-    });
-    res.status(200).json({ message: "successfully increment views" });
+    const updatePost = await Post.findByIdAndUpdate(
+      post._id,
+      {
+        $inc: { views: 1 },
+      },
+      {
+        new: true,
+      }
+    );
+    res
+      .status(200)
+      .json({ post: updatePost, message: "successfully increment views" });
   } catch (error) {
     console.log("incrementViews => ", error);
   }
@@ -92,12 +109,36 @@ const incrementLikes = async (req, res) => {
     const checkPost = await Post.findById(post._id);
     if (!checkPost)
       return res.status(400).json({ message: "Post isn't exist" });
+    const updatePost = await Post.findByIdAndUpdate(
+      post._id,
+      {
+        $inc: { likes: 1 },
+      },
+      {
+        new: true,
+      }
+    );
+    res
+      .status(200)
+      .json({ post: updatePost, message: "successfully increment likes" });
+  } catch (error) {
+    console.log(" incrementLikes => ", error);
+  }
+};
+
+const decrementLikes = async (req, res) => {
+  try {
+    const { post } = req.body;
+    if (!post) return res.status(400).json({ message: "post isn't provide" });
+    const checkPost = await Post.findById(post._id);
+    if (!checkPost)
+      return res.status(400).json({ message: "Post isn't exist" });
     const updatePost = await Post.findByIdAndUpdate(post._id, {
-      $inc: { likes: 1 },
+      $dcr: { likes: 1 },
     });
     res
       .status(200)
-      .json({ updatePost, message: "successfully increment likes" });
+      .json({ post: updatePost, message: "successfully increment likes" });
   } catch (error) {
     console.log(" incrementLikes => ", error);
   }
@@ -105,20 +146,35 @@ const incrementLikes = async (req, res) => {
 
 const addComments = async (req, res) => {
   try {
-    const { post, comment } = req.body;
-    if (!post || !comment)
+    const { post, comment, user } = req.body;
+    if (!post || !comment || !user)
       return res.status(400).json({ message: "Insufficient Data" });
 
     const checkPost = await Post.findById(post._id);
     if (!checkPost)
       return res.status(400).json({ message: "Post isn't exist" });
-
-    const addComment = await Post.findByIdAndUpdate(post._id, {
-      $addToSet: { comments: comment },
+    const checkUser = await User.findOne({
+      $or: [{ email: user?.email }, { username: user?.username }],
     });
 
+    if (!checkUser)
+      return res.status(400).json({ message: "User doesn't exist" });
+
+    const addComment = await Post.findByIdAndUpdate(
+      post._id,
+      {
+        $addToSet: { comments: { comment, sender: checkUser._id } },
+      },
+      {
+        new: true,
+      }
+    ).populate("comments")
+    .populate("creator")
+
     if (!addComment) return res.status(400).json({ message: "Internel Issue" });
-    res.status(200).json({ message: "successfully comment added" });
+    res
+      .status(200)
+      .json({ post: addComment, message: "successfully comment added" });
   } catch (error) {
     console.log(" addComment => ", error);
   }
@@ -133,5 +189,6 @@ module.exports = {
   addComments,
   incrementViews,
   incrementLikes,
-  fetchUserPosts
+  fetchUserPosts,
+  decrementLikes,
 };

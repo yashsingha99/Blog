@@ -17,8 +17,14 @@ const postSchema = mongoose.Schema(
     },
     comments: [
       {
-        type: String,
-        default : ""
+        comment : {
+         type: String,
+        },
+        sender : {
+          type : mongoose.Schema.Types.ObjectId,
+          ref : "User"
+        }
+
       },
     ],
     likes: {
