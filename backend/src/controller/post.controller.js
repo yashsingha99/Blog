@@ -38,45 +38,72 @@ const addPost = async (req, res) => {
   }
 };
 
-const fetchUserPosts = async (req, res) => {
+const updatePost = async (req, res) => {
+ try {
+   const { url, postname, content, user, prevPost } = req.body;
+   if (!url || postname || !content || !user || !prevPost)
+     return res.status(400).json({ message: "Insufficient Data" });
+   const checkUser = await User.findOne({
+     $or: [{ email: user.email }, { username: user.username }],
+   });
+   if (!checkUser)
+     return res.status(400).json({ message: "creater doesn't exist" });
+   const findPost = await Post.findByIdAndUpdate(prevPost._id, 
+     {
+     title: postname,
+     content,
+     path: url,
+     creator: checkUser._id,
+   },
+   {
+     new : true
+   }
+ );
+   if(!findPost) 
+      return res.status(400).json({message : "post doesn't exist"})
+ } catch (error) {
+   console.log("updatePost", error);
+ }
+};
+
+const deletePost = async (req, res) => {
   try {
-    const { user } = req.body;
-    if (!user) return res.status(400).json({ message: "Insufficient data" });
-
-    const checkUser = await User.findOne({
-      $or: [{ email: user?.email }, { username: user?.username }],
-    }).populate("posts").then(async(res) => {
-      
-    })
-
-
-    if (!checkUser)
-      return res.status(400).json({ message: "user doesn't exist" });
-
-    const allposts = checkUser.posts;
-
-    if (!allposts)
-      return res.status(400).json({
-        message: `${
-          user?.username ? user.username : "user"
-        } isn't created any post`,
-      });
-
-    res
-      .status(200)
-      .json({ posts: allposts, message: " successfully fetched posts " });
+    const {post} = req.body;
+    if (!post)
+      return res.status(400).json({ message: "Insufficient Data" });
+    const findPost = await Post.findByIdAndUpdate(post._id, 
+      {
+      status : false
+    },
+    {
+      new : true
+    }
+  );
+    if(!findPost) 
+       return res.status(400).json({message : "post doesn't exist"})
+    res.status(200).json({message : "successfully deleted post"})
   } catch (error) {
-    console.log(" fetchUserPosts => ", error);
+    console.log("deletePost", error);
   }
 };
 
-const updatePost = async (req, res) => {};
+const fetchAllPosts = async (req, res) => {
+  try {
+    const {user} = req.body;
+    if (!user)
+      return res.status(400).json({ message: "Insufficient Data" });
+    const allPost = await Post.find({})
+    if(!allPost) 
+       return res.status(400).json({message : "posts doesn't exist"})
+    res.status(200).json({Posts : allPost, message : "successfully deleted post"})
+  } catch (error) {
+    console.log("fetchAllPosts", error);
+  }
+};
 
-const deletePost = async (req, res) => {};
+const fetchTitles = async (req, res) => {
 
-const fetchAllPosts = async (req, res) => {};
-
-const fetchTitles = async (req, res) => {};
+};
 
 const incrementViews = async (req, res) => {
   try {
@@ -168,8 +195,9 @@ const addComments = async (req, res) => {
       {
         new: true,
       }
-    ).populate("comments")
-    .populate("creator")
+    )
+      .populate("comments")
+      .populate("creator");
 
     if (!addComment) return res.status(400).json({ message: "Internel Issue" });
     res
@@ -180,6 +208,8 @@ const addComments = async (req, res) => {
   }
 };
 
+const addSeac
+
 module.exports = {
   addPost,
   updatePost,
@@ -189,6 +219,5 @@ module.exports = {
   addComments,
   incrementViews,
   incrementLikes,
-  fetchUserPosts,
   decrementLikes,
 };

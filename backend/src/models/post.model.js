@@ -5,16 +5,20 @@ const postSchema = mongoose.Schema(
     title: {
       type: String,
     },
+
     path: {
       type: String,
     },
+
     creator: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+
     content: {
       type: String,
     },
+
     comments: [
       {
         comment : {
@@ -27,14 +31,29 @@ const postSchema = mongoose.Schema(
 
       },
     ],
+
     likes: {
         type : Number,
        default : 0
     },
+
     views: {
         type:Number,
        default:0
+    },
+
+    status : {
+      type:Boolean,
+      required:true,
+      default : true
+    },
+
+   searchLists : [
+    {
+      type : String,
     }
+   ]
+   
   },
   { timeStamps: true }
 );
