@@ -38,6 +38,7 @@ const addPost = async (req, res) => {
   }
 };
 
+
 const updatePost = async (req, res) => {
  try {
    const { url, postname, content, user, prevPost } = req.body;
@@ -66,6 +67,7 @@ const updatePost = async (req, res) => {
  }
 };
 
+
 const deletePost = async (req, res) => {
   try {
     const {post} = req.body;
@@ -87,6 +89,7 @@ const deletePost = async (req, res) => {
   }
 };
 
+
 const fetchAllPosts = async (req, res) => {
   try {
     const {user} = req.body;
@@ -102,7 +105,6 @@ const fetchAllPosts = async (req, res) => {
 };
 
 const fetchTitles = async (req, res) => {
-
 };
 
 const incrementViews = async (req, res) => {
